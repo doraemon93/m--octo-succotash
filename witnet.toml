@@ -1,0 +1,104 @@
+[connections]
+# Server address tells what local interface and port the Witnet node server should bind to.
+# This will probably look like `0.0.0.0:21337` or `192.168.x.x:21337`, but it totally depends on your local network.
+server_addr = "0.0.0.0:21337"
+# Public address needs to match your *public* IP and port, assuming your router is configured to forward incoming
+# connections to the local IP of the device the node is running. Failure to configure this setting will result in your
+# node not receiving inbound connections (see: https://docs.witnet.io/try/run-a-node/#open-your-ports).
+public_addr = "0.0.0.0:21337"
+# List of bootstrap peer addresses. The first time that a node runs, it connects to some of these addresses and query
+# them for a list of all the addresses they know. From that moment on, the addresses listed here are not given any
+# preference over addresses that have been discovered in any way.
+known_peers = [
+        "52.166.178.145:21337",
+        "62.171.170.204:21337",
+        "64.225.67.5:21337",
+        "64.227.34.207:21337",
+        "68.183.204.241:21337",
+        "95.111.247.115:21337",
+        "116.203.234.252:21337",
+        "128.199.91.152:21337",
+        "135.181.36.168:21337",
+        "138.201.155.65:21337",
+        "139.162.102.104:21337",
+        "142.93.250.57:21337",
+        "144.91.104.168:21337",
+        "157.245.67.41:21337",
+        "159.69.146.71:21337",
+        "161.35.172.136:21337",
+        "161.97.64.253:21337",
+        "164.90.183.45:21337",
+        "167.71.210.157:21337",
+        "167.86.109.249:21337",
+        "167.86.112.22:21337",
+        "167.86.112.23:21337",
+        "167.99.154.252:21337",
+        "173.249.3.178:21337",
+        "173.249.8.65:21337",
+        "173.249.46.207:21337",
+        "178.128.229.239:21337",
+        "188.127.177.29:21337",
+        "206.189.132.68:21337",
+        "207.180.208.248:21337",
+        "207.180.219.48:21337",
+        "207.180.221.3:21337",
+        "209.126.8.47:21337",
+        "209.126.10.194:21337",
+]
+# How many peer connections to stablish before considering that is safe to decide what the best chain tip is, based on
+# the beacons that those peers are announcing.
+outbound_limit = 12
+# Period for opening new peer connections while the current number of peers is lower than `outbound_limit`.
+bootstrap_peers_period_seconds = 1
+# Reject (tarpit) inbound connections coming from addresses in the same /16 IP range, so as to prevent sybil peers from
+# monopolizing our inbound capacity (128 by default).
+reject_sybil_inbounds = true
+
+[storage]
+# Path of the folder where RocksDB storage files will be written to.
+db_path = ".witnet/storage"
+
+[jsonrpc]
+# Enables or disables the JSON-RPC server. This is needed for using the CLI methods of the node.
+enabled = true
+# The address (IP and port) which the JSON-RPC server binds to.
+# WARNING: this should be kept to a local, private address (e.g. 127.0.0.1) to prevent any device in your local network
+# (and potentially, the internet) from messing with your JSON-RPC server.
+server_address = "127.0.0.1:21338"
+
+[ntp]
+# Period for checking the local system clock drift against a public NTP server.
+update_period_seconds = 1024
+
+[mining]
+# Enable or disable mining and participation in resolving data requests.
+enabled = true
+# Limit the number of retrievals that the node will perform during a single epoch. Due to the locking, highly
+# side-effected nature of performing HTTP GET requests, a limit needs to be enforced on the number of retrievals that
+# we are willing to perform by unit of time.
+# Raising this limit too high may make the node unresponsive to time-critical events, which could potentially lead to
+# desynchronization, forking or slashing.
+# This is assumed to be a safe default and it should never cause any node to refrain from participating in data requests
+# for which it was eligible.
+data_request_max_retrievals_per_epoch = 30
+# Limit the number of milliseconds that the node is willing to wait for a data source in from data request to response.
+data_request_timeout_milliseconds = 2000
+# Path for the `genesis_block.json` file that contains the initial wit allocations that need to be built into the first
+# block in the block chain.
+genesis_path = ".witnet/config/genesis_block.json"
+# `mint_external_address` and `mint_external_percentage` enable splitting the mint reward between the node's
+# own address and an "external" address, e.g. a the address of a wallet. `mint_external_percentage` indicates
+# the percentage of the block rewards that will be assigned to `mint_external_address` (50% by default)
+#mint_external_address = "twit1jqgf4rxjrgas3kdhj3t4cr3mg3n33m8zw0aglr"
+#mint_external_percentage = 50
+# Set a minimum fee you require before your node includes a value transfer transaction into a block
+minimum_vtt_fee_nanowits = 1
+
+[log]
+# Logging level, i.e. from more verbose to quieter: "trace" > "debug" > "info" > "warn" > "error" > "none"
+level = "info"
+
+[wallet]
+# The address (IP and port) of a Witnet node's JSON-RPC server. This should normally match `json_rpc.server_address`.
+# If more than one address is provided, the wallet will choose one at random.
+node_url = "127.0.0.1:21338"

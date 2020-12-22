@@ -1,0 +1,343 @@
+syntax = "proto3";
+
+package witnet;
+
+message Message {
+    message Command {
+        oneof kind {
+            Version Version = 1;
+            Verack Verack = 2;
+            GetPeers GetPeers = 3;
+            Peers Peers = 4;
+            Block Block = 5;
+            InventoryAnnouncement InventoryAnnouncement = 6;
+            InventoryRequest InventoryRequest = 7;
+            LastBeacon LastBeacon = 8;
+            Transaction Transaction = 9;
+            SuperBlockVote SuperBlockVote = 10;
+            SuperBlock SuperBlock = 11;
+        }
+    }
+
+    // uint32 is not a fixed-size 32 bit integer: it uses variable length encoding
+    uint32 magic = 1;
+    Command kind = 2;
+}
+
+message Version {
+    uint32 version = 1;
+    int64 timestamp = 2;
+    fixed64 capabilities = 3;
+    Address sender_address = 4;
+    Address receiver_address = 5;
+    string user_agent = 6;
+    fixed64 nonce = 7;
+    LastBeacon beacon = 8;
+}
+
+message Verack {
+    // Intentionally empty
+}
+
+message GetPeers {
+    // Intentionally empty
+}
+
+message Peers {
+    repeated Address peers = 1;
+}
+
+message Block {
+    message BlockEligibilityClaim {
+        VrfProof proof = 1;
+    }
+    message BlockHeader {
+        message BlockMerkleRoots {
+            Hash mint_hash = 1;
+            Hash vt_hash_merkle_root = 2;
+            Hash dr_hash_merkle_root = 3;
+            Hash commit_hash_merkle_root = 4;
+            Hash reveal_hash_merkle_root = 5;
+            Hash tally_hash_merkle_root = 6;
+        }
+        uint32 version = 1;
+        CheckpointBeacon beacon = 2;
+        BlockMerkleRoots merkle_roots = 3;
+        BlockEligibilityClaim proof = 4;
+        Bn256PublicKey bn256_public_key = 5;
+    }
+    message BlockTransactions {
+        MintTransaction mint = 1;
+        repeated VTTransaction value_transfer_txns = 2;
+        repeated DRTransaction data_request_txns = 3;
+        repeated CommitTransaction commit_txns = 4;
+        repeated RevealTransaction reveal_txns = 5;
+        repeated TallyTransaction tally_txns = 6;
+    }
+
+    BlockHeader block_header = 1;
+    KeyedSignature block_sig = 2;
+    BlockTransactions txns = 3;
+}
+
+message SuperBlock {
+    uint32 signing_committee_length = 1;
+    Hash ars_root = 2;
+    Hash data_request_root = 3;
+    uint32 index = 4;
+    Hash last_block = 5;
+    Hash last_block_in_previous_superblock = 6;
+    Hash tally_root = 7;
+}
+
+message InventoryAnnouncement {
+    repeated InventoryEntry inventory = 1;
+}
+
+message InventoryRequest {
+    repeated InventoryEntry inventory = 1;
+}
+
+message LastBeacon {
+    CheckpointBeacon highest_block_checkpoint = 1;
+    CheckpointBeacon highest_superblock_checkpoint = 2;
+}
+
+message OutputPointer {
+    Hash transaction_id = 1;
+    uint32 output_index = 2;
+}
+
+message ValueTransferOutput {
+    PublicKeyHash pkh = 1;
+    uint64 value = 2;
+    uint64 time_lock = 3;
+}
+
+message DataRequestOutput {
+    message RADRequest {
+        enum RADType {
+            HttpGet = 0;
+        }
+        message RADFilter {
+            uint32 op = 1;
+            bytes args = 2;
+        }
+        message RADRetrieve {
+            RADType kind = 1;
+            string url = 2;
+            // TODO: RADScript should maybe be a type?
+            bytes script = 3;
+        }
+        message RADAggregate {
+            repeated RADFilter filters = 1;
+            uint32 reducer = 2;
+        }
+        message RADTally {
+            repeated RADFilter filters = 1;
+            uint32 reducer = 2;
+        }
+
+        uint64 time_lock = 1;
+        repeated RADRetrieve retrieve = 2;
+        RADAggregate aggregate = 3;
+        RADTally tally = 4;
+    }
+
+    RADRequest data_request = 1;
+    uint64 witness_reward = 2;
+    uint32 witnesses = 3;
+    uint64 commit_and_reveal_fee = 4;
+    uint32 min_consensus_percentage = 5;
+    uint64 collateral = 6;
+}
+
+message Input {
+    OutputPointer output_pointer = 1;
+}
+
+// Transaction types
+message VTTransactionBody {
+    repeated Input inputs = 1;
+    repeated ValueTransferOutput outputs = 2;
+}
+
+message VTTransaction {
+    VTTransactionBody body = 1;
+    repeated KeyedSignature signatures = 2;
+}
+
+message DRTransactionBody {
+    repeated Input inputs = 1;
+    repeated ValueTransferOutput outputs = 2;
+    DataRequestOutput dr_output = 3;
+}
+
+message DRTransaction {
+    DRTransactionBody body = 1;
+    repeated KeyedSignature signatures = 2;
+}
+
+message CommitTransactionBody {
+    Hash dr_pointer = 1;
+    Hash commitment = 2;
+    DataRequestEligibilityClaim proof = 3;
+    repeated Input collateral = 4;
+    repeated ValueTransferOutput outputs = 5;
+    Bn256PublicKey bn256_public_key = 6;
+}
+
+message CommitTransaction {
+    CommitTransactionBody body = 1;
+    repeated KeyedSignature signatures = 2;
+}
+
+message RevealTransactionBody {
+    Hash dr_pointer = 1;
+    bytes reveal = 2;
+    PublicKeyHash pkh = 3;
+}
+
+message RevealTransaction {
+    RevealTransactionBody body = 1;
+    repeated KeyedSignature signatures = 2;
+}
+
+message TallyTransaction {
+    Hash dr_pointer = 1;
+    bytes tally = 2;
+    repeated ValueTransferOutput outputs = 3;
+    repeated PublicKeyHash out_of_consensus = 4;
+    repeated PublicKeyHash error_committers = 5;
+}
+
+message MintTransaction {
+    // The epoch field is used to ensure that each MintTransaction has a unique hash
+    fixed32 epoch = 1;
+    repeated ValueTransferOutput outputs = 2;
+}
+
+message Transaction {
+    oneof kind {
+        VTTransaction ValueTransfer = 1;
+        DRTransaction DataRequest = 2;
+        CommitTransaction Commit = 3;
+        RevealTransaction Reveal = 4;
+        TallyTransaction Tally = 5;
+        MintTransaction Mint = 6;
+    }
+}
+
+// Helper structures (not meant to be sent directly as messages)
+message Hash {
+    oneof kind {
+        bytes SHA256 = 1;
+    }
+}
+
+message Secp256k1Signature {
+    bytes der = 1;
+}
+
+message Signature {
+    oneof kind {
+        Secp256k1Signature Secp256k1 = 1;
+    }
+}
+
+message Bn256Signature {
+    bytes signature = 1;
+}
+
+message PublicKey {
+    bytes public_key = 1;
+}
+
+message Bn256PublicKey {
+    bytes public_key = 1;
+}
+
+message PublicKeyHash {
+    bytes hash = 1;
+}
+
+message KeyedSignature {
+    Signature signature = 1;
+    PublicKey public_key = 2;
+}
+
+message Bn256KeyedSignature {
+    Bn256Signature signature = 1;
+    Bn256PublicKey public_key = 2;
+}
+
+message Address {
+    bytes address = 1;
+}
+
+message CheckpointBeacon {
+    fixed32 checkpoint = 1;
+    Hash hash_prev_block = 2;
+}
+
+message CheckpointVRF {
+    fixed32 checkpoint = 1;
+    Hash hash_prev_vrf = 2;
+}
+
+message InventoryEntry {
+    oneof kind {
+        Hash Block = 1;
+        Hash Tx = 2;
+        uint32 SuperBlock = 3;
+    }
+}
+
+message ConsensusConstants {
+    int64 checkpoint_zero_timestamp = 1;
+    uint32 checkpoints_period = 2;
+    Hash bootstrap_hash = 3;
+    Hash genesis_hash = 4;
+    uint32 max_vt_weight = 5;
+    uint32 max_dr_weight = 6;
+    uint32 activity_period = 7;
+    uint32 reputation_expire_alpha_diff = 8;
+    uint32 reputation_issuance = 9;
+    uint32 reputation_issuance_stop = 10;
+    double reputation_penalization_factor = 11;
+    uint32 mining_backup_factor = 12;
+    uint32 mining_replication_factor = 13;
+    uint64 collateral_minimum = 14;
+    uint32 collateral_age = 15;
+    uint32 superblock_period = 16;
+    uint32 extra_rounds = 17;
+    uint32 initial_difficulty = 18;
+    uint32 epochs_with_initial_difficulty = 19;
+    repeated string bootstrapping_committee = 20;
+    uint32 superblock_signing_committee_size = 21;
+    uint32 superblock_committee_decreasing_period = 22;
+    uint32 superblock_committee_decreasing_step = 23;
+    uint64 initial_block_reward = 24;
+    uint32 halving_period = 25;
+}
+
+message VrfProof {
+    bytes proof = 1;
+    PublicKey public_key = 2;
+}
+
+message DataRequestVrfMessage {
+    CheckpointVRF vrf_input = 1;
+    Hash dr_hash = 2;
+}
+
+message DataRequestEligibilityClaim {
+    VrfProof proof = 1;
+}
+
+message SuperBlockVote {
+    Bn256Signature bn256_signature = 1;
+    KeyedSignature secp256k1_signature = 2;
+    Hash superblock_hash = 3;
+    fixed32 superblock_index = 4;
+}

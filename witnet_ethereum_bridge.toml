@@ -1,0 +1,55 @@
+# Address of the witnet node JSON-RPC server
+witnet_jsonrpc_addr = "127.0.0.1:21338"
+# Url of the ethereum client
+eth_client_url = "http://127.0.0.1:8888"
+# Address of the WitnetRequestsBoard deployed contract
+wrb_contract_addr = "0x354B08f9fD4b171e774898261908DfeA113b0e14"
+# Address of the BlockRelay deployed contract
+block_relay_contract_addr = "0xEaA9e7Ea612b169f5b41cfF86dA6322f57264a19"
+# Ethereum account used to create the transactions
+eth_account = "0x333b18f64949C59Cd0b84b51C7580f260c563c31"
+# Enable block relay from witnet to ethereum, relay only new blocks
+# (blocks that were recently consolidated)
+enable_block_relay_new_blocks = true
+# Enable block relay from witnet to ethereum, relay only old blocks
+# (old blocks that were never posted to the block relay, but contain a posted tally)
+enable_block_relay_old_blocks = true
+# Relay all superblocks
+relay_all_superblocks_even_the_empty_ones = false
+# Enable data request claim + inclusion
+enable_claim_and_inclusion = true
+# Enable data request result reporting
+enable_result_reporting = true
+# If post_to_witnet_more_than_once is enabled, this is the minimum time in seconds that must
+# elapse before the same data request is created and broadcasted to the Witnet network.
+post_to_witnet_again_after_timeout = 3600 # 1 hour
+# Post data request more than once? Useful to retry if the data request
+# was not included in a block
+post_to_witnet_more_than_once = false
+# Subscribe to witnet blocks? This is only necessary for block relay
+subscribe_to_witnet_blocks = true
+# Period to check for new blocks in block relay
+block_relay_polling_rate_ms = 30_000
+# Period to check for resolved data request using the witnet `dataRequestReport`
+# method
+witnet_dr_report_polling_rate_ms = 20_000
+# Period to try to claim old data request whose claim expired
+claim_dr_rate_ms = 30_000
+# Period to check for state updates in existing requests in the WRB
+eth_existing_dr_polling_rate_ms = 10_000
+# Period to check for new requests in the WRB
+eth_new_dr_polling_rate_ms = 1_000
+
+# Running in the witnet testnet?
+witnet_testnet = false
+# If readDrHash returns 0, try again later
+read_dr_hash_interval_ms = 10_000
+
+# Gas limits for some methods.
+# To let the client estimate, comment out the fields
+[gas_limits]
+claim_data_requests = 5000000
+post_data_request = 10000000
+post_new_block = 2000000
+report_data_request_inclusion = 2000000
+report_result = 2000000

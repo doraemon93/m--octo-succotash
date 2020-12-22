@@ -1,0 +1,24 @@
+[package]
+authors = ["Witnet Foundation <info@witnet.foundation>"]
+description = "validations component"
+edition = "2018"
+name = "witnet_validations"
+version = "0.3.2"
+workspace = ".."
+
+[dependencies]
+failure = "0.1.8"
+itertools = "0.8.2"
+log = "0.4.8"
+
+witnet_crypto = { path = "../crypto" }
+witnet_data_structures = { path = "../data_structures" }
+witnet_rad = { path = "../rad" }
+
+[dev-dependencies]
+bencher = "0.1.5"
+witnet_protected = { path = "../protected" }
+
+[[bench]]
+name = "reppoe"
+harness = false

@@ -1,0 +1,150 @@
+site_name: Witnet-rust Documentation
+site_url: https://docs.witnet.io
+copyright: © 2018 Witnet Foundation. Available under <a href="https://www.gnu.org/licenses/fdl-1.3.en.html" rel="license">GNU Free Documentation License v1.3</a>
+
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  - Get started:
+    - What is Witnet: get-started/what-is-witnet.md
+    - Why Rust?: get-started/why-rust.md
+    - Design Overview: get-started/design-overview.md
+    - Install:
+      - GNU/Linux: get-started/installation/gnu-linux.md
+      - macOS: get-started/installation/macos.md
+      - Windows: get-started/installation/windows.md
+      - From source code: get-started/installation/from-source.md
+      - Cross compilation: get-started/installation/cross-compilation.md
+  - Protocol:
+    - Network:
+      - Overview: protocol/network/overview.md
+      - Data Structures:
+        - Block: protocol/network/data-structures/block.md
+        - IP Address: protocol/network/data-structures/ip-address.md
+        - Signature: protocol/network/data-structures/signature.md
+        - Transaction: protocol/network/data-structures/transaction.md
+      - Messages:
+        - Overview: protocol/network/messages/overview.md
+        - Handshake: protocol/network/messages/handshake.md
+        - Peer Discovery: protocol/network/messages/peer-discovery.md
+        - Heartbeat: protocol/network/messages/heartbeat.md
+        - Inventory exchange: protocol/network/messages/inventory.md
+      - Constants: protocol/network/constants.md
+    - Data requests:
+      - Overview: protocol/data-requests/overview.md
+      - RADON:
+        - Encoding: protocol/data-requests/radon/encoding.md
+        - Types and operators:
+          - Overview: protocol/data-requests/radon/types/overview.md
+          - Array<V>: protocol/data-requests/radon/types/array.md
+          - Boolean: protocol/data-requests/radon/types/boolean.md
+          - Integer: protocol/data-requests/radon/types/integer.md
+          - Float: protocol/data-requests/radon/types/float.md
+          - Map<V>: protocol/data-requests/radon/types/map.md
+          - Bytes: protocol/data-requests/radon/types/bytes.md
+          - Null: protocol/data-requests/radon/types/null.md
+          - Result<V>: protocol/data-requests/radon/types/result.md
+          - String: protocol/data-requests/radon/types/string.md
+        - Implicit `Result<V>` wrapping: protocol/data-requests/radon/wrapping.md
+        - Exception handling: protocol/data-requests/radon/exceptions.md
+        - Predefined functions:  protocol/data-requests/radon/functions.md
+        - Subscripts: protocol/data-requests/radon/subscripts.md
+        - Examples: protocol/data-requests/radon/examples.md
+        - Constants: protocol/data-requests/radon/constants.md
+    - Transactions:
+      - Introduction: protocol/transactions.md
+      - WitScript: protocol/witscript.md
+    - Blocks: protocol/blocks.md
+    - Mining: protocol/mining.md
+    - Reputation: protocol/reputation.md
+    - Serialization: protocol/serialization.md
+    - Task assignment: protocol/task-assignment.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - Peer-To-Peer:
+      - Connections: architecture/p2p/connections.md
+      - Gossiping: architecture/p2p/gossip.md
+      - Encoding: architecture/p2p/encoding.md
+    - Persistent Storage: architecture/storage.md
+    - Managers:
+      - Introduction: architecture/managers/managers.md
+      - Chain Manager: architecture/managers/chain-manager.md
+      - Config Manager: architecture/managers/config-manager.md
+      - Connections Manager: architecture/managers/connections-manager.md
+      - Epoch Manager: architecture/managers/epoch-manager.md
+      - Inventory Manager: architecture/managers/inventory-manager.md
+      - Peers Manager: architecture/managers/peers-manager.md
+      - RAD Manager: architecture/managers/rad-manager.md
+      - Sessions Manager: architecture/managers/sessions-manager.md
+      - Storage Manager: architecture/managers/storage-manager.md
+    - Session: architecture/session.md
+    - Mempool Management: architecture/mempool-mgmt.md
+    - Block Management: architecture/block-mgmt.md
+    - UTXO Management: architecture/utxo-mgmt.md
+    - Data Requests:
+      - Overview: architecture/rad/overview.md
+    - Witscript Parser: architecture/witscript.md
+    - JSON-RPC Server: architecture/json-rpc-server.md
+  - Interface:
+    - Command Line Interface (CLI): interface/cli.md
+    - JSON-RPC: interface/json-rpc.md
+    - Pub/Sub API: interface/pub-sub.md
+    - Wallet: interface/wallet.md
+  - Advanced:
+    - Network constants: advanced/constants.md
+    - Differences with the whitepaper: advanced/whitepaper-differences.md
+  - Roadmap: roadmap.md
+  - Contributing: contributing.md
+  - Development: development.md
+  - Configuration:
+    - Custom toml file: configuration/toml-file.md
+    - Command Line Interface (CLI): configuration/cli.md
+    - Environment defaults: configuration/environment.md
+  - Glossary: glossary.md
+
+theme:
+  name: 'material'
+  favicon: 'assets/images/favicon.ico'
+  logo: 'assets/images/logo.svg" alt="Witnet Logo'
+  palette:
+    primary: 'deep purple'
+    accent: 'deep orange'
+
+repo_name: 'witnet/witnet-rust'
+repo_url: 'https://github.com/witnet/witnet-rust'
+edit_uri: 'blob/master/docs'
+remote_name: 'upstream'
+
+extra:
+  og_image: 'assets/images/logo-docs.png'
+  social:
+    - type: 'github'
+      link: 'https://github.com/witnet'
+    - type: 'reddit'
+      link: 'https://reddit.com/r/witnet'
+    - type: 'twitter'
+      link: 'https://twitter.com/witnet_io'
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - footnotes
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde

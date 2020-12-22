@@ -1,0 +1,58 @@
+name: Check on every push
+
+on: [push, pull_request]
+
+jobs:
+  build_ubuntu:
+
+    runs-on: ubuntu-latest
+
+    env:
+      ROCKSDB_LIB_DIR: /usr/lib/
+      RUST_BACKTRACE: 1
+      CLIPPY_LINTS: >-
+        -D warnings
+        -D clippy::cast-lossless
+        -D clippy::cast-possible-truncation
+        -D clippy::cast-possible-wrap
+        -D clippy::cast-precision-loss
+        -D clippy::cast-sign-loss
+        -D clippy::checked-conversions
+        
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+          components: rustfmt, clippy
+
+      - name: Formatter
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - name: Install compilation system dependencies
+        run: |
+          sudo apt-get update -y -qq
+          sudo apt-get install -y g++-5 cmake libcurl4-openssl-dev libelf-dev libdw-dev cmake gcc binutils-dev protobuf-compiler librocksdb-dev
+
+      - name: Clippy
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all --all-features -- ${{ env.CLIPPY_LINTS }}
+          
+      - name: Clippy2
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --all --all-targets --all-features -- ${{ env.CLIPPY_LINTS }} -A clippy::many-single-char-names
+
+      - name: Test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all --verbose

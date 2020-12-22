@@ -1,0 +1,40 @@
+dist: bionic
+sudo: false
+language: rust
+
+rust:
+  - stable
+
+# https://levans.fr/rust_travis_cache.html
+# Need to cache the whole `.cargo` directory to keep .crates.toml for `cargo update` to work...
+# ...but don't cache the cargo registry
+cache:
+  directories:
+    - /home/travis/.cargo
+before_cache:
+  - rm -rf /home/travis/.cargo/registry
+
+addons:
+  apt:
+    packages:
+      - g++-5
+      - cmake
+      - libcurl4-openssl-dev
+      - libelf-dev
+      - libdw-dev
+      - cmake
+      - gcc
+      - binutils-dev
+      - protobuf-compiler
+      - librocksdb-dev
+
+env:
+  global:
+    - ROCKSDB_LIB_DIR=/usr/lib/ # Use dynamically linked RocksDB library to speed up builds
+    - RUST_BACKTRACE="1"
+
+before_script:
+  - which just || curl -LSfs https://japaric.github.io/trust/install.sh | sh -s -- --git casey/just --target x86_64-unknown-linux-musl --to ~/.cargo/bin
+
+script:
+  - just ci
